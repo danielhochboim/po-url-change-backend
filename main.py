@@ -20,4 +20,4 @@ app.add_middleware(
 app.include_router(router, prefix="/channels")
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", port = 5000)
+    uvicorn.run("main:app", port = 5000) # For local checks
