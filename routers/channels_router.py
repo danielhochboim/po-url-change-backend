@@ -1,11 +1,11 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 from . import schemas
 import httpx
 import re
 
 router = APIRouter()
-channels={"channel 1" : "url1", "channel 2":"url2"} #for testing
+channels = {"channel 1" : "url1", "channel 2":"url2"} #for testing
 
 @router.get("/")
 async def get_channels():
@@ -28,4 +28,4 @@ async def update_url(channel_name: str, url: schemas.URL):
         return channels[channel_name]
     
     else:
-        return {"400": "Bad Request"}
+        raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = "Invalid URL.")
