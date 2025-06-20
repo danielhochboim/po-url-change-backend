@@ -16,16 +16,30 @@ async def get_channels():
 @router.get("/{channel_name}")
 async def get_channel_url(channel_name: str):
     #channel_url = httpx.get("https://pi-api-url") # PI-API request to get the a specific channel's URL
-    return channels[channel_name]
+    channel_url = "hello" #for testing
+    try:
+        if not channel_url:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = 
+                                f"Channel URL for channel {channel_name} does not exist.")
+    
+        return {channel_name: channels[channel_name]}
+    
+    except KeyError as K: # Need to be changed to channel_name not found (from a PI-API request)
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail = 
+                            f"channel '{channel_name}' does not exist.")
 
 
 @router.patch("/{channel_name}")
 async def update_url(channel_name: str, url: schemas.URL):
 
-    if re.search(r"^https?:\/\/.*", url.url):
-        #httpx.put("https://pi-api-url", data={'url': url.url}) # PI-API request to put the url in the right place
-        channels[channel_name] = url.url
-        return channels[channel_name]
-    
-    else:
+    if channel_name not in channels: # i.e channel not found with PI-API request
+        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, detail =
+                            f"channel '{channel_name}' does not exist.")
+
+    if not re.search(r"^https?:\/\/.*", url.url):
         raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail = "Invalid URL.")
+    
+    #httpx.put("https://pi-api-url", data={'url': url.url}) # PI-API request to put the url in the right place
+    channels[channel_name] = url.url #for testing
+    
+    return {channel_name: channels[channel_name]}
